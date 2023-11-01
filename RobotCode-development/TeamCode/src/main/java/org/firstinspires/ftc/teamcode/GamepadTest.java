@@ -27,13 +27,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 package org.firstinspires.ftc.teamcode;
+
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -63,9 +66,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
+
 @TeleOp(name="Gamepad Test", group="Linear OpMode")
 //@Disabled
 public class GamepadTest extends LinearOpMode {
+
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -73,6 +78,7 @@ public class GamepadTest extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+
 
     @Override
     public void runOpMode() {
@@ -93,6 +99,7 @@ public class GamepadTest extends LinearOpMode {
             boolean lb = gamepad2.left_bumper;
             boolean rb = gamepad2.right_bumper;
 
+
             telemetry.addData("Keys a", a);
             telemetry.addData("Keys b", b);
             telemetry.addData("Keys x", x);
@@ -107,6 +114,7 @@ public class GamepadTest extends LinearOpMode {
             telemetry.addData("Right Trigger", rt);
             telemetry.addData("Left Bumper", lb);
             telemetry.addData("Right Bumper", rb);
+
 
             telemetry.update();
         }

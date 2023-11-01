@@ -41,6 +41,7 @@ public class moveMotor extends LinearOpMode{
             } else {m1.setPower(0);}
 
             telemetry.addData(">", a_down + " left: " + leftX2 + ", " + leftY2 + "  ||| right: " + rightX2 + ", " + rightY2 );
+            telemetry.addData("Motor Power:", m1.getPower()); //Motor Power: 0.5
             telemetry.update();
 
         }
