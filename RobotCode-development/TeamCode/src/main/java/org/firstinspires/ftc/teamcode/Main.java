@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -70,9 +71,12 @@ public class Main extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private final ElapsedTime runtime = new ElapsedTime();
+    private final double STARTPOS = 0.648;
+    private final double LAUNCHPOS = 1;
 
     @Override
     public void runOpMode() {
+        /// INIT
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
@@ -96,6 +100,13 @@ public class Main extends LinearOpMode {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        // Airplane init
+        Servo l1 = hardwareMap.get(Servo.class, "l1");
+
+        if (l1.getPosition() != STARTPOS) {
+            l1.setPosition(STARTPOS);
+        }
+
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -105,9 +116,11 @@ public class Main extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            /// Drivetrain
             double max;
             boolean dpad_up = gamepad1.dpad_up;
             boolean dpad_down = gamepad1.dpad_down;
+            boolean x_pressed = gamepad1.x;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
@@ -181,9 +194,14 @@ public class Main extends LinearOpMode {
                 ls2.setPower(0.5);
             }
 
-            /// Airplane launcher
-            com.qualcomm.robotcore.hardware.Servo launcher_servo;
-
-            Servo l1 = hardwareMap.get(Servo.class, "l1");
+            /// Airplane Launchere
+            if (gamepad1.x) {
+                if (l1.getPosition() == STARTPOS) {
+                    l1.setPosition(STARTPOS);
+                } else {
+                    l1.setPosition(LAUNCHPOS);
+                }
+            }
         }
-    }}
+    }
+}
