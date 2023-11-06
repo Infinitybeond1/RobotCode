@@ -29,13 +29,19 @@
 
 package org.firstinspires.ftc.teamcode;
 
+//import androidx.compose.ui.text.CacheTextLayoutInput;
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -66,13 +72,21 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name="Main", group="Linear OpMode")
-@Disabled
+//@Disabled
 public class Main extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private final ElapsedTime runtime = new ElapsedTime();
-    private final double STARTPOS = 0.648;
-    private final double LAUNCHPOS = 1;
+    private final double STARTPOS_D = 0.648;
+    private final double LAUNCHPOS_D = 1;
+
+    private final double ARM_BACK = 0;
+    private final double ARM_MID = 0.5;
+    private final double ARM_FRONT = 1;
+    private final double CLAW_CLOSE = 0;
+    private final double CLAW_OPEN = 1;
+
+    IMU imu;
 
     @Override
     public void runOpMode() {
@@ -85,27 +99,62 @@ public class Main extends LinearOpMode {
         DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
+        //Change motor direction
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        // Airplane init
-        Servo l1 = hardwareMap.get(Servo.class, "l1");
+        //Set modes
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if (l1.getPosition() != STARTPOS) {
-            l1.setPosition(STARTPOS);
+        // Drone init
+        Servo d1 = hardwareMap.get(Servo.class, "d1");
+
+        if (d1.getPosition() != STARTPOS_D) {
+            d1.setPosition(STARTPOS_D);
         }
+
+        //Arm init
+        Servo a1 = hardwareMap.get(Servo.class, "a1");
+        Servo a2 = hardwareMap.get(Servo.class, "a2");
+
+        if (a1.getPosition() != ARM_MID ) {
+            a1.setPosition(ARM_MID);
+        }
+        if (a2.getPosition() != ARM_MID ) {
+            a2.setPosition(ARM_MID);
+        }
+
+        //Claw init
+        Servo c1 = hardwareMap.get(Servo.class, "claw");
+
+        if (c1.getPosition() != CLAW_OPEN) {
+            c1.setPosition(CLAW_OPEN);
+        }
+
+        //Linear Slide init
+        DcMotor ls1 = hardwareMap.get(DcMotor.class, "ls1");
+        DcMotor ls2 = hardwareMap.get(DcMotor.class, "ls2");
+
+        ls1.setDirection(DcMotor.Direction.FORWARD);
+        ls2.setDirection(DcMotor.Direction.FORWARD);
+
+        ls1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ls2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //IMU init
+        imu.initialize(
+                new IMU.Parameters(
+                        new RevHubOrientationOnRobot(
+                                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                                RevHubOrientationOnRobot.UsbFacingDirection.UP
+                        )
+                )
+        );
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -115,93 +164,109 @@ public class Main extends LinearOpMode {
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
+        //Drivetrain
         while (opModeIsActive()) {
-            /// Drivetrain
-            double max;
-            boolean dpad_up = gamepad1.dpad_up;
-            boolean dpad_down = gamepad1.dpad_down;
-            boolean x_pressed = gamepad1.x;
+            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = gamepad1.left_stick_x;
+            double rx = gamepad1.right_stick_x;
 
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            /// Field Centric
 
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
-
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-
-            if (max > 1.0) {
-                leftFrontPower  /= max;
-                rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
+            // This button choice was made so that it is hard to hit on accident,
+            // it can be freely changed based on preference.
+            // The equivalent button is start on Xbox-style controllers.
+            if (gamepad1.options) {
+                imu.resetYaw();
             }
 
-            // This is test code:
-            //
-            // Uncomment the following code to test your motor directions.
-            // Each button should make the corresponding motor run FORWARD.
-            //   1) First get all the motors to take to correct positions on the robot
-            //      by adjusting your Robot Configuration if necessary.
-            //   2) Then make sure they run in the correct direction by modifying the
-            //      the setDirection() calls above.
-            // Once the correct motors move in the correct direction re-comment this code.
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.u);
 
-            /*
-            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
-            */
+            // Rotate the movement direction counter to the bot's rotation
+            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-            // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
+            rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio,
+            // but only if at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double frontLeftPower = (rotY + rotX + rx) / denominator;
+            double backLeftPower = (rotY - rotX + rx) / denominator;
+            double frontRightPower = (rotY - rotX - rx) / denominator;
+            double backRightPower = (rotY + rotX - rx) / denominator;
+
+            leftFrontDrive.setPower(frontLeftPower);
+            leftBackDrive.setPower(backLeftPower);
+            rightFrontDrive.setPower(frontRightPower);
+            rightBackDrive.setPower(backRightPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
+            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.update();
 
             /// Linear Slide
-            DcMotor ls1 = hardwareMap.get(DcMotor.class, "ls1");
-            DcMotor ls2 = hardwareMap.get(DcMotor.class, "ls2");
+            ls1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            ls2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            if (dpad_up) {
-                ls1.setDirection(DcMotorSimple.Direction.FORWARD);
-                ls2.setDirection(DcMotorSimple.Direction.FORWARD);
 
-                ls1.setPower(0.5);
-                ls2.setPower(0.5);
-            } else if (dpad_down) {
-                ls1.setDirection(DcMotorSimple.Direction.REVERSE);
-                ls2.setDirection(DcMotorSimple.Direction.REVERSE);
+            if (gamepad2.dpad_up) {
+                ls1.setTargetPosition(300);
+                ls2.setTargetPosition(300);
 
                 ls1.setPower(0.5);
                 ls2.setPower(0.5);
+            } else if (gamepad2.dpad_down) {
+                ls1.setTargetPosition(50);
+                ls2.setTargetPosition(50);
+
+                ls1.setPower(-0.5);
+                ls2.setPower(-0.5);
+            }else {
+                ls1.setPower(0);
+                ls2.setPower(0);
             }
 
-            /// Airplane Launchere
-            if (gamepad1.x) {
-                if (l1.getPosition() == STARTPOS) {
-                    l1.setPosition(STARTPOS);
+            /// Airplane Launcher
+            if (gamepad2.x) {
+                if (d1.getPosition() == STARTPOS_D) {
+                    d1.setPosition(LAUNCHPOS_D);
                 } else {
-                    l1.setPosition(LAUNCHPOS);
+                    d1.setPosition(STARTPOS_D);
                 }
             }
+
+            // Arm; a2 is reversed
+            if (gamepad2.right_bumper) {
+                if (a1.getPosition() == ARM_MID) {
+                    a1.setPosition(ARM_FRONT);
+                    a2.setPosition(ARM_BACK);
+                } else {
+                    a1.setPosition(ARM_MID);
+                    a2.setPosition(ARM_MID);
+                }
+            }else if (gamepad2.left_bumper) {
+                if (a2.getPosition() == ARM_MID) {
+                    a1.setPosition(ARM_BACK);
+                    a2.setPosition(ARM_FRONT);
+                } else {
+                    a2.setPosition(ARM_MID);
+                    a2.setPosition(ARM_MID);
+                }
+            }
+
+            // Claw
+            if (gamepad2.right_trigger != 0.00) {
+                if (c1.getPosition() == CLAW_CLOSE) {
+                    c1.setPosition(CLAW_OPEN);
+                } else {
+                    c1.setPosition(CLAW_CLOSE);
+                }
+
+            }
+
         }
     }
 }
