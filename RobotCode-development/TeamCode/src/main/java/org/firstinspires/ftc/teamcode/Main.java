@@ -31,12 +31,15 @@ package org.firstinspires.ftc.teamcode;
 
 //import androidx.compose.ui.text.CacheTextLayoutInput;
 
+//import com.acmerobotics.dashboard.FtcDashboard;
+//import com.acmerobotics.dashboard.config.Config;
+//import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+//import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -69,72 +72,71 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- */
+*/
 
+//@Config
 @TeleOp(name="Main", group="Linear OpMode")
 //@Disabled
 public class Main extends LinearOpMode {
-
     // Declare OpMode members for each of the 4 motors.
     private final ElapsedTime runtime = new ElapsedTime();
-    private final double STARTPOS_D = 0.648;
-    private final double LAUNCHPOS_D = 1;
+    public static volatile double STARTPOS_D = 0.648;
+    public static volatile double LAUNCHPOS_D = 1;
 
-    private final double ARM_BACK = 0;
-    private final double ARM_MID = 0.5;
-    private final double ARM_FRONT = 1;
-    private final double CLAW_CLOSE = 0;
-    private final double CLAW_OPEN = 1;
+    //Not calibrated
+    public static volatile double ARM_BACK = 0;
+    public static volatile double ARM_MID = 0.5;
+    public static volatile double ARM_FRONT = 1;
+    public static volatile double CLAW_CLOSE = 0.5;
+    public static volatile double CLAW_OPEN = .75;
 
     IMU imu;
 
     @Override
     public void runOpMode() {
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         /// INIT
-
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
-        DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "lfd");
+        DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "lbd");
+        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "rfd");
+        DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "rbd");
 
         //Change motor direction
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        //rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        //rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
 
         //Set modes
+        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Drone init
-        Servo d1 = hardwareMap.get(Servo.class, "d1");
 
-        if (d1.getPosition() != STARTPOS_D) {
-            d1.setPosition(STARTPOS_D);
-        }
+        // Drone init
+        Servo d1 = hardwareMap.get(Servo.class, "drone");
+
+        d1.setPosition(STARTPOS_D);
 
         //Arm init
         Servo a1 = hardwareMap.get(Servo.class, "a1");
         Servo a2 = hardwareMap.get(Servo.class, "a2");
 
-        if (a1.getPosition() != ARM_MID ) {
-            a1.setPosition(ARM_MID);
-        }
-        if (a2.getPosition() != ARM_MID ) {
-            a2.setPosition(ARM_MID);
-        }
+        a2.setDirection(Servo.Direction.REVERSE);
+
+        a1.setPosition(ARM_MID);
+        a2.setPosition(ARM_MID);
 
         //Claw init
         Servo c1 = hardwareMap.get(Servo.class, "claw");
 
-        if (c1.getPosition() != CLAW_OPEN) {
-            c1.setPosition(CLAW_OPEN);
-        }
+        c1.setPosition(CLAW_OPEN);
 
         //Linear Slide init
         DcMotor ls1 = hardwareMap.get(DcMotor.class, "ls1");
@@ -143,8 +145,11 @@ public class Main extends LinearOpMode {
         ls1.setDirection(DcMotor.Direction.FORWARD);
         ls2.setDirection(DcMotor.Direction.FORWARD);
 
-        ls1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        ls2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        ls1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ls2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        imu = hardwareMap.get(IMU.class, "imu");
 
         //IMU init
         imu.initialize(
@@ -165,8 +170,8 @@ public class Main extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         //Drivetrain
-        while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+        while (opModeIsActive()){
+            /*double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
@@ -179,7 +184,7 @@ public class Main extends LinearOpMode {
                 imu.resetYaw();
             }
 
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.u);
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
             // Rotate the movement direction counter to the bot's rotation
             double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -199,29 +204,42 @@ public class Main extends LinearOpMode {
             leftFrontDrive.setPower(frontLeftPower);
             leftBackDrive.setPower(backLeftPower);
             rightFrontDrive.setPower(frontRightPower);
-            rightBackDrive.setPower(backRightPower);
+            rightBackDrive.setPower(backRightPower);*/
 
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
-            telemetry.update();
+            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x;
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio,
+            // but only if at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
+
+            if(y != 0 || x != 0 || rx != 0) {
+                leftFrontDrive.setPower(frontLeftPower);
+                leftBackDrive.setPower(backLeftPower);
+                rightFrontDrive.setPower(frontRightPower);
+                rightBackDrive.setPower(backRightPower);
+            }else {
+                leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
+
 
             /// Linear Slide
-            ls1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            ls2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //ls1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //ls2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
             if (gamepad2.dpad_up) {
-                ls1.setTargetPosition(300);
-                ls2.setTargetPosition(300);
-
                 ls1.setPower(0.5);
                 ls2.setPower(0.5);
-            } else if (gamepad2.dpad_down) {
-                ls1.setTargetPosition(50);
-                ls2.setTargetPosition(50);
-
+            }else if (gamepad2.dpad_down) {
                 ls1.setPower(-0.5);
                 ls2.setPower(-0.5);
             }else {
@@ -229,7 +247,7 @@ public class Main extends LinearOpMode {
                 ls2.setPower(0);
             }
 
-            /// Airplane Launcher
+            ///Airplane Launcher
             if (gamepad2.x) {
                 if (d1.getPosition() == STARTPOS_D) {
                     d1.setPosition(LAUNCHPOS_D);
@@ -242,23 +260,29 @@ public class Main extends LinearOpMode {
             if (gamepad2.right_bumper) {
                 if (a1.getPosition() == ARM_MID) {
                     a1.setPosition(ARM_FRONT);
-                    a2.setPosition(ARM_BACK);
+                    a2.setPosition(ARM_FRONT);
                 } else {
                     a1.setPosition(ARM_MID);
                     a2.setPosition(ARM_MID);
                 }
-            }else if (gamepad2.left_bumper) {
+            }
+            if (gamepad2.left_bumper) {
                 if (a2.getPosition() == ARM_MID) {
                     a1.setPosition(ARM_BACK);
-                    a2.setPosition(ARM_FRONT);
+                    a2.setPosition(ARM_BACK);
                 } else {
                     a2.setPosition(ARM_MID);
                     a2.setPosition(ARM_MID);
                 }
             }
 
+            if (gamepad2.options) {
+                imu.resetYaw();
+            }
+
             // Claw
-            if (gamepad2.right_trigger != 0.00) {
+            if (gamepad2
+                    .b) {
                 if (c1.getPosition() == CLAW_CLOSE) {
                     c1.setPosition(CLAW_OPEN);
                 } else {

@@ -68,7 +68,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="Gamepad Test", group="Linear OpMode")
-//@Disabled
+@Disabled
 public class GamepadTest extends LinearOpMode {
 
 
