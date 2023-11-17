@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-@Autonomous(name="Auto", group="Linear OpMode")
-public class Auto extends LinearOpMode {
+@Autonomous(name="Auto2", group="Linear OpMode")
+public class Auto2 extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
     public static volatile double ARM_MID = 0.5;
@@ -51,19 +51,15 @@ public class Auto extends LinearOpMode {
 
 
             //bot goe forward
-            leftFrontDrive.setPower(0.25);
-            leftBackDrive.setPower(0.25);
-            rightFrontDrive.setPower(0.25);
-            rightBackDrive.setPower(0.25);
-            sleep(800);
-            leftFrontDrive.setPower(0);
-            leftBackDrive.setPower(0);
-            rightFrontDrive.setPower(0);
-            rightBackDrive.setPower(0);
+            leftFrontDrive.setPower(0.5);
+            leftBackDrive.setPower(0.5);
+            rightFrontDrive.setPower(0.5);
+            rightBackDrive.setPower(0.5);
+            sleep(2000);
 
             //bot drops pixel(make sure to raise arm or something so pixel doesnt catch)
-            //a1.setPosition(ARM_MID);
-            //a2.setPosition(ARM_MID);
+            a1.setPosition(ARM_MID);
+            a2.setPosition(ARM_MID);
             /*
             //bot goes a bit more forward
             leftFrontDrive.setPower(0.5);
@@ -73,10 +69,10 @@ public class Auto extends LinearOpMode {
             sleep(2000);
 
             //bot turns 90 degrees
-            leftFrontDrive.setPower(0.5);
-            leftBackDrive.setPower(0.5);
-            rightFrontDrive.setPower(-0.5);
-            rightBackDrive.setPower(-0.5);
+            leftFrontDrive.setPower(-0.5);
+            leftBackDrive.setPower(-0.5);
+            rightFrontDrive.setPower(0.5);
+            rightBackDrive.setPower(0.5);
             sleep(1000);
 
             //bot drives forward more
@@ -86,10 +82,10 @@ public class Auto extends LinearOpMode {
             rightBackDrive.setPower(0.5);
             sleep(2000);
             //bot turns 90
-            leftFrontDrive.setPower(0.5);
-            leftBackDrive.setPower(0.5);
-            rightFrontDrive.setPower(-0.5);
-            rightBackDrive.setPower(-0.5);
+            leftFrontDrive.setPower(-0.5);
+            leftBackDrive.setPower(-0.5);
+            rightFrontDrive.setPower(0.5);
+            rightBackDrive.setPower(0.5);
             sleep(1000);
             //forward until bot is in front of parking space
             leftFrontDrive.setPower(0.5);
@@ -98,10 +94,10 @@ public class Auto extends LinearOpMode {
             rightBackDrive.setPower(0.5);
             sleep(2000);
             //turn back 90 degrees
-            leftFrontDrive.setPower(-0.5);
-            leftBackDrive.setPower(-0.5);
-            rightFrontDrive.setPower(0.5);
-            rightBackDrive.setPower(0.5);
+            leftFrontDrive.setPower(0.5);
+            leftBackDrive.setPower(0.5);
+            rightFrontDrive.setPower(-0.5);
+            rightBackDrive.setPower(-0.5);
             sleep(1000);
             //bot drives into the wall
             leftFrontDrive.setPower(0.5);

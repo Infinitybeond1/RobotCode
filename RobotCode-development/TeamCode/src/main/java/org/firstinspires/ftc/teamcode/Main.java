@@ -29,22 +29,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
-//import androidx.compose.ui.text.CacheTextLayoutInput;
-
-//import com.acmerobotics.dashboard.FtcDashboard;
-//import com.acmerobotics.dashboard.config.Config;
-//import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-//import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Subsystems.Claw;
+import org.firstinspires.ftc.teamcode.Subsystems.LinearSlide;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -72,29 +67,21 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
-*/
+ */
 
 //@Config
-@TeleOp(name="Main", group="Linear OpMode")
+@TeleOp(name = "Main", group = "Linear OpMode")
 //@Disabled
 public class Main extends LinearOpMode {
-    // Declare OpMode members for each of the 4 motors.
-    private final ElapsedTime runtime = new ElapsedTime();
     public static volatile double STARTPOS_D = 0.648;
     public static volatile double LAUNCHPOS_D = 1;
-
     //Not calibrated
-    public static volatile double ARM_BACK = 0;
-    public static volatile double ARM_MID = 0.5;
-    public static volatile double ARM_FRONT = 1;
-    public static volatile double CLAW_CLOSE = 0.5;
-    public static volatile double CLAW_OPEN = .75;
-
+    // Declare OpMode members for each of the 4 motors.
+    private final ElapsedTime runtime = new ElapsedTime();
     IMU imu;
 
     @Override
     public void runOpMode() {
-        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         /// INIT
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
@@ -103,11 +90,7 @@ public class Main extends LinearOpMode {
         DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "rfd");
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "rbd");
 
-        //Change motor direction
-        //rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        //rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-
-        //Set modes
+        /// Set modes
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -118,36 +101,24 @@ public class Main extends LinearOpMode {
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Drone init
         Servo d1 = hardwareMap.get(Servo.class, "drone");
-
         d1.setPosition(STARTPOS_D);
 
         //Arm init
         Servo a1 = hardwareMap.get(Servo.class, "a1");
         Servo a2 = hardwareMap.get(Servo.class, "a2");
 
-        a2.setDirection(Servo.Direction.REVERSE);
-
-        a1.setPosition(ARM_MID);
-        a2.setPosition(ARM_MID);
-
         //Claw init
-        Servo c1 = hardwareMap.get(Servo.class, "claw");
-
-        c1.setPosition(CLAW_OPEN);
+        Claw claw = new Claw();
 
         //Linear Slide init
-        DcMotor ls1 = hardwareMap.get(DcMotor.class, "ls1");
-        DcMotor ls2 = hardwareMap.get(DcMotor.class, "ls2");
-
-        ls1.setDirection(DcMotor.Direction.FORWARD);
-        ls2.setDirection(DcMotor.Direction.FORWARD);
-
-
-        ls1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        ls2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LinearSlide ls = new LinearSlide();
 
         imu = hardwareMap.get(IMU.class, "imu");
 
@@ -160,6 +131,9 @@ public class Main extends LinearOpMode {
                         )
                 )
         );
+        // camera init
+        // Camera camera = hardwareMap.get(Camera.class, "camera");
+
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -170,11 +144,7 @@ public class Main extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         //Drivetrain
-        while (opModeIsActive()){
-            /*double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
+        while (opModeIsActive()) {
             /// Field Centric
 
             // This button choice was made so that it is hard to hit on accident,
@@ -183,6 +153,10 @@ public class Main extends LinearOpMode {
             if (gamepad1.options) {
                 imu.resetYaw();
             }
+
+            double y = -gamepad1.left_stick_y / 2; // Remember, Y stick value is reversed
+            double x = (gamepad1.left_stick_x * 1.1) / 2; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x / 2;
 
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
@@ -204,9 +178,9 @@ public class Main extends LinearOpMode {
             leftFrontDrive.setPower(frontLeftPower);
             leftBackDrive.setPower(backLeftPower);
             rightFrontDrive.setPower(frontRightPower);
-            rightBackDrive.setPower(backRightPower);*/
+            rightBackDrive.setPower(backRightPower);
 
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            /*double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
             // Denominator is the largest motor power (absolute value) or 1
@@ -218,62 +192,44 @@ public class Main extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            if(y != 0 || x != 0 || rx != 0) {
-                leftFrontDrive.setPower(frontLeftPower);
-                leftBackDrive.setPower(backLeftPower);
-                rightFrontDrive.setPower(frontRightPower);
-                rightBackDrive.setPower(backRightPower);
-            }else {
-                leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            }
-
+            leftFrontDrive.setPower(frontLeftPower);
+            leftBackDrive.setPower(backLeftPower);
+            rightFrontDrive.setPower(frontRightPower);
+            rightBackDrive.setPower(backRightPower);*/
 
             /// Linear Slide
-            //ls1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            //ls2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
             if (gamepad2.dpad_up) {
-                ls1.setPower(0.5);
-                ls2.setPower(0.5);
-            }else if (gamepad2.dpad_down) {
-                ls1.setPower(-0.5);
-                ls2.setPower(-0.5);
-            }else {
-                ls1.setPower(0);
-                ls2.setPower(0);
+                ls.up();
+            } else if (gamepad2.dpad_down) {
+                ls.down();
+            } else {
+                ls.stop();
             }
 
             ///Airplane Launcher
             if (gamepad2.x) {
-                if (d1.getPosition() == STARTPOS_D) {
-                    d1.setPosition(LAUNCHPOS_D);
-                } else {
-                    d1.setPosition(STARTPOS_D);
-                }
+                d1.setPosition(LAUNCHPOS_D);
+            } else if (gamepad2.back) {
+                d1.setPosition(STARTPOS_D);
             }
 
-            // Arm; a2 is reversed
-            if (gamepad2.right_bumper) {
-                if (a1.getPosition() == ARM_MID) {
-                    a1.setPosition(ARM_FRONT);
-                    a2.setPosition(ARM_FRONT);
-                } else {
-                    a1.setPosition(ARM_MID);
-                    a2.setPosition(ARM_MID);
+            // Arm
+            if (gamepad2.dpad_left) {
+                if (armPosA1 < .9) {
+                    a1.setPosition(armPosA1);
+                    a2.setPosition(1 - armPosA1);
+                    armPosA1 += 0.005;
+
                 }
             }
-            if (gamepad2.left_bumper) {
-                if (a2.getPosition() == ARM_MID) {
-                    a1.setPosition(ARM_BACK);
-                    a2.setPosition(ARM_BACK);
-                } else {
-                    a2.setPosition(ARM_MID);
-                    a2.setPosition(ARM_MID);
+            if (gamepad2.dpad_right) {
+                if (armPosA1 > 0.01) {
+                    a1.setPosition(armPosA1);
+                    a2.setPosition(1 - armPosA1);
+                    armPosA1 -= 0.005;
+
                 }
+
             }
 
             if (gamepad2.options) {
@@ -281,16 +237,12 @@ public class Main extends LinearOpMode {
             }
 
             // Claw
-            if (gamepad2
-                    .b) {
-                if (c1.getPosition() == CLAW_CLOSE) {
-                    c1.setPosition(CLAW_OPEN);
-                } else {
-                    c1.setPosition(CLAW_CLOSE);
-                }
-
+            if (gamepad2.a) {
+                claw.open();
             }
-
+            if (gamepad2.b) {
+                claw.close();
+            }
         }
     }
 }
