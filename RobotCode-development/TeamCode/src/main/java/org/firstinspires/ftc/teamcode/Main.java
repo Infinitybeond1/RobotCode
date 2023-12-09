@@ -1,44 +1,15 @@
-/* Copyright (c) 2021 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Claw;
+import org.firstinspires.ftc.teamcode.Subsystems.Drone;
 import org.firstinspires.ftc.teamcode.Subsystems.LinearSlide;
 
 /*
@@ -73,12 +44,14 @@ import org.firstinspires.ftc.teamcode.Subsystems.LinearSlide;
 @TeleOp(name = "Main", group = "Linear OpMode")
 //@Disabled
 public class Main extends LinearOpMode {
-    public static volatile double STARTPOS_D = 0.648;
-    public static volatile double LAUNCHPOS_D = 1;
     //Not calibrated
     // Declare OpMode members for each of the 4 motors.
     private final ElapsedTime runtime = new ElapsedTime();
     IMU imu;
+    Arm arm;
+    Claw claw;
+    Drone drone;
+    LinearSlide ls;
 
     @Override
     public void runOpMode() {
@@ -87,39 +60,43 @@ public class Main extends LinearOpMode {
         // to the names assigned during the robot configuration step on the DS or RC devices.
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "lfd");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "lbd");
-        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "rfd");
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "rbd");
+        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "rfd");
 
         /// Set modes
-        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Drone init
-        Servo d1 = hardwareMap.get(Servo.class, "drone");
-        d1.setPosition(STARTPOS_D);
+
 
         //Arm init
-        Servo a1 = hardwareMap.get(Servo.class, "a1");
-        Servo a2 = hardwareMap.get(Servo.class, "a2");
+
+        arm = new Arm(hardwareMap);
+
+        drone = new Drone(hardwareMap);
 
         //Claw init
-        Claw claw = new Claw();
+        claw = new Claw(hardwareMap);
 
         //Linear Slide init
-        LinearSlide ls = new LinearSlide();
+        ls = new LinearSlide(hardwareMap);
 
+        //Wrist init
+        //WristServo wrist = new WristServo();
+        /*
         imu = hardwareMap.get(IMU.class, "imu");
 
         //IMU init
@@ -131,6 +108,9 @@ public class Main extends LinearOpMode {
                         )
                 )
         );
+
+         */
+
         // camera init
         // Camera camera = hardwareMap.get(Camera.class, "camera");
 
@@ -142,6 +122,14 @@ public class Main extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        //while(arm.armPos > 0.1){
+        //    arm.up();
+        //}
+
+        //ls.up();
+        //sleep(50);
+        //ls.stop();;
+
         // run until the end of the match (driver presses STOP)
         //Drivetrain
         while (opModeIsActive()) {
@@ -150,7 +138,7 @@ public class Main extends LinearOpMode {
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
             // The equivalent button is start on Xbox-style controllers.
-            if (gamepad1.options) {
+            /*if (gamepad1.options) {
                 imu.resetYaw();
             }
 
@@ -169,7 +157,7 @@ public class Main extends LinearOpMode {
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            //double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
             double frontLeftPower = (rotY + rotX + rx) / denominator;
             double backLeftPower = (rotY - rotX + rx) / denominator;
             double frontRightPower = (rotY - rotX - rx) / denominator;
@@ -178,11 +166,69 @@ public class Main extends LinearOpMode {
             leftFrontDrive.setPower(frontLeftPower);
             leftBackDrive.setPower(backLeftPower);
             rightFrontDrive.setPower(frontRightPower);
-            rightBackDrive.setPower(backRightPower);
+            rightBackDrive.setPower(backRightPower);*/
 
-            /*double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+/*
+        double drive  = gamepad1.right_stick_y;
+        double strafe = gamepad1.left_stick_y;
+        double twist  = gamepad1.left_stick_x;
+
+        /*
+         * If we had a gyro and wanted to do field-oriented control, here
+         * is where we would implement it.
+         *
+         * The idea is fairly simple; we have a robot-oriented Cartesian (x,y)
+         * coordinate (strafe, drive), and we just rotate it by the gyro
+         * reading minus the offset that we read in the init() method.
+         * Some rough pseudocode demonstrating:
+         *
+         * if Field Oriented Control:
+         *     get gyro heading
+         *     subtract initial offset from heading
+         *     convert heading to radians (if necessary)
+         *     new strafe = strafe * cos(heading) - drive * sin(heading)
+         *     new drive  = strafe * sin(heading) + drive * cos(heading)
+         *
+         * If you want more understanding on where these rotation formulas come
+         * from, refer to
+         * https://en.wikipedia.org/wiki/Rotation_(mathematics)#Two_dimensions
+         */
+/*
+            // You may need to multiply some of these by -1 to invert direction of
+            // the motor.  This is not an issue with the calculations themselves.
+            double[] speeds = {
+                    (drive + strafe + twist),
+                    (drive - strafe - twist),
+                    (drive - strafe + twist),
+                    (drive + strafe - twist)
+            };
+
+            // Because we are adding vectors and motors only take values between
+            // [-1,1] we may need to normalize them.
+
+            // Loop through all values in the speeds[] array and find the greatest
+            // *magnitude*.  Not the greatest velocity.
+            double max = Math.abs(speeds[0]);
+            for (double speed : speeds) {
+                if (max < Math.abs(speed)) max = Math.abs(speed);
+            }
+
+            // If and only if the maximum is outside of the range we want it to be,
+            // normalize all the other speeds based on the given speed value.
+            if (max > 1) {
+                for (int i = 0; i < speeds.length; i++) speeds[i] /= max;
+            }
+
+            // apply the calculated values to the motors.
+            leftFrontDrive.setPower(speeds[0]);
+            rightFrontDrive.setPower(speeds[1]);
+            leftBackDrive.setPower(speeds[2]);
+            rightBackDrive.setPower(speeds[3]);
+*/
+            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
+
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
@@ -195,7 +241,7 @@ public class Main extends LinearOpMode {
             leftFrontDrive.setPower(frontLeftPower);
             leftBackDrive.setPower(backLeftPower);
             rightFrontDrive.setPower(frontRightPower);
-            rightBackDrive.setPower(backRightPower);*/
+            rightBackDrive.setPower(backRightPower);
 
             /// Linear Slide
             if (gamepad2.dpad_up) {
@@ -206,43 +252,54 @@ public class Main extends LinearOpMode {
                 ls.stop();
             }
 
+
             ///Airplane Launcher
-            if (gamepad2.x) {
-                d1.setPosition(LAUNCHPOS_D);
+            if (gamepad2.start) {
+                drone.launch();
             } else if (gamepad2.back) {
-                d1.setPosition(STARTPOS_D);
+                drone.reset();
             }
 
             // Arm
-            if (gamepad2.dpad_left) {
-                if (armPosA1 < .9) {
-                    a1.setPosition(armPosA1);
-                    a2.setPosition(1 - armPosA1);
-                    armPosA1 += 0.005;
-
-                }
+            if (gamepad2.x) {
+                arm.up();
             }
-            if (gamepad2.dpad_right) {
-                if (armPosA1 > 0.01) {
-                    a1.setPosition(armPosA1);
-                    a2.setPosition(1 - armPosA1);
-                    armPosA1 -= 0.005;
+            if (gamepad2.y) {
+                arm.down();
+            }
+            /*
+            if (gamepad1.dpad_right) {
+                arm.right();
+            }
+            if (gamepad1.dpad_left) {
+                arm.left();
+            }*/
 
-                }
 
+            /* Wrist
+            if (gamepad1.dpad_left) {
+                wrist.up();
+            }
+            if (gamepad1.dpad_right) {
+                wrist.down();
             }
 
             if (gamepad2.options) {
                 imu.resetYaw();
             }
 
+
+             */
+
             // Claw
-            if (gamepad2.a) {
-                claw.open();
-            }
-            if (gamepad2.b) {
+            if (gamepad2.left_bumper) {
                 claw.close();
             }
+            if (gamepad2.right_bumper) {
+                claw.open();
+            }
+
+
         }
     }
 }

@@ -50,7 +50,7 @@ public class Auto extends LinearOpMode {
             a2.setPosition(1-ARM_DOWN);
 
 
-            //bot goe forward
+            //bot goe forwardx
             leftFrontDrive.setPower(0.25);
             leftBackDrive.setPower(0.25);
             rightFrontDrive.setPower(0.25);

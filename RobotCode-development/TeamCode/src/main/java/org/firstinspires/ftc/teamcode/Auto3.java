@@ -96,10 +96,10 @@ public class Auto3 extends LinearOpMode {
         runtime.reset();
 
         //bot goe forward
-        leftFrontDrive.setPower(0.5);
-        leftBackDrive.setPower(0.5);
-        rightFrontDrive.setPower(0.5);
-        rightBackDrive.setPower(0.5);
+        leftFrontDrive.setPower(-0.5);
+        leftBackDrive.setPower(-0.5);
+        rightFrontDrive.setPower(-0.5);
+        rightBackDrive.setPower(-0.5);
 
         sleep(1200);
 
