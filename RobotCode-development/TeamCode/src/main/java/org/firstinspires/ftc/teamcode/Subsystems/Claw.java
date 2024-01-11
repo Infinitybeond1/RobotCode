@@ -6,22 +6,28 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+
 public class Claw {
-    private static final double CLAW_CLOSE = .635;
-    private static final double CLAW_OPEN = .427;
+    private double CLAWPOSOPEN = 0.4;
+    private double CLAWPOSCLOSED = 0.6;
 
+    public boolean claw1IsOpen = false;
+    public boolean claw2IsOpen = false;
 
-    public Servo claw;
+    public Servo claw1;
+    public Servo claw2;
 
     public Claw(HardwareMap hardwareMap) {
-        claw = hardwareMap.get(Servo.class, "claw");
+        claw1 = hardwareMap.get(Servo.class, "clawR");
+        claw2 = hardwareMap.get(Servo.class, "clawL");
     }
 
-    public void open() {
-        claw.setPosition(CLAW_OPEN);
-    }
+    public void updatePos(){
 
-    public void close() {
-        claw.setPosition(CLAW_CLOSE);
+        if(claw1IsOpen) claw1.setPosition(CLAWPOSOPEN);
+        else claw1.setPosition(CLAWPOSCLOSED);
+
+        if(claw2IsOpen) claw2.setPosition(1-CLAWPOSOPEN);
+        else claw2.setPosition(1-CLAWPOSCLOSED);
     }
 }

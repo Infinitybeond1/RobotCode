@@ -45,10 +45,10 @@ import org.firstinspires.ftc.teamcode.Subsystems.WristServo;
  */
 
 //@Config
-@TeleOp(name = "Main", group = "Linear OpMode")
+@TeleOp(name = "mainClone", group = "Linear OpMode")
 //@Disabled
 
-public class Main extends LinearOpMode {
+public class mainClone extends LinearOpMode {
 
 
     //Not calibrated
@@ -73,7 +73,8 @@ public class Main extends LinearOpMode {
     public void runOpMode() {
         /// INIT
         // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
+        // to the names assigned during the robot configuration step on the DS or RC devices
+
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "lfd");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "lbd");
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "rbd");
@@ -98,8 +99,7 @@ public class Main extends LinearOpMode {
         //Arm init
         arm = new Arm(hardwareMap);
 
-        //Drone
-        drone = new Drone(hardwareMap);
+        //drone = new Drone(hardwareMap);
 
         //Claw init
         claw = new Claw(hardwareMap);
@@ -107,8 +107,11 @@ public class Main extends LinearOpMode {
         //Wrist Init
         wrist = new WristServo(hardwareMap);
 
+        //cam init
+        cam = new Camera(hardwareMap, telemetry);
+
         //Linear Slide init
-        ls = new LinearSlide(hardwareMap, telemetry);
+        //ls = new LinearSlide(hardwareMap, telemetry);
 
         //Wrist init
         //WristServo wrist = new WristServo();
@@ -136,13 +139,12 @@ public class Main extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        runtime.reset();
-        arm.setPos(arm.ARMPOSPICKUP);
-        wrist.setPos(wrist.WRISTPOSPICKUP);
-        claw.updatePos();
+        //runtime.reset();
+        //arm.setPos(arm.ARMPOSPICKUP);
+        //wrist.setPos(wrist.WRISTPOSPICKUP);
 
         while (opModeIsActive()) {
-
+            /*
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
@@ -156,7 +158,7 @@ public class Main extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            double acc = 0.04;
+            double acc = 0.02;
 
             frontLeftPower = frontLeftPower > lastFrontLeftPower + acc ? lastFrontLeftPower + acc : frontLeftPower;
             backLeftPower = backLeftPower > lastBackLeftPower + acc ? lastBackLeftPower + acc : backLeftPower;
@@ -223,18 +225,15 @@ public class Main extends LinearOpMode {
             }
 
             if(gamepad2.a){
-                claw.claw1IsOpen = true;
-                claw.claw2IsOpen = true;
+                if(claw.claw1IsOpen ^ claw.claw2IsOpen) {
+                    claw.claw1IsOpen = false;
+                    claw.claw2IsOpen = false;
+                }else{
+                    claw.claw1IsOpen = !claw.claw1IsOpen;
+                    claw.claw2IsOpen = !claw.claw2IsOpen;
+                }
                 claw.updatePos();
-                while(gamepad2.a);
-
-            }
-
-            if(gamepad2.y){
-                claw.claw1IsOpen = false;
-                claw.claw2IsOpen = false;
-                claw.updatePos();
-                while(gamepad2.y);
+                while(gamepad1.a);
 
             }
 
@@ -243,7 +242,6 @@ public class Main extends LinearOpMode {
                 arm.setPos(arm.ARMPOSSCORING);
                 wrist.setPos(wrist.WRISTPOSSCORING);
             } else if (gamepad2.x) {
-                ls.targetPos = 0;
                 arm.setPos(arm.ARMPOSPICKUP);
                 wrist.setPos(wrist.WRISTPOSPICKUP);
             }
@@ -270,42 +268,32 @@ public class Main extends LinearOpMode {
                 telemetry.update();
             }
 
+            ///Drone
+            if(gamepad2.y){
+                telemetry.addLine("launhing drone");
+                telemetry.update();
+            }
+
             ///Airplane Launcher
-
-            if (gamepad1.b) {
-                drone.dronePos -= 0.005;
-                drone.updatePos();
-            }
-            if (gamepad1.x) {
-                drone.dronePos += 0.005;
+            /*
+            if (gamepad2.start) {
+                drone.launch();
+            } else if (gamepad2.back) {
+                drone.reset();
             }
 
-
-            if(opModeIsActive()) {
+             */
+           /* if(opModeIsActive()) {
                 ls.staticTick();
             }
 
             telemetry.addData("wristpos", wrist.wristPos);
             telemetry.addData("armpos", arm.armPos);
-            telemetry.addData("dronepos: ", drone.dronePos);
-
-            if(claw.claw1IsOpen) {
-                telemetry.addLine("Claw 1(Right): Open");
-            }else{
-                telemetry.addLine("Claw 1(Right): Closed");
-            }
-
-            if(claw.claw2IsOpen) {
-                telemetry.addLine("Claw 2(Left): Open");
-            }else{
-                telemetry.addLine("Claw 2(Left): Closed");
-            }
-            telemetry.update();
+            telemetry.addData("motor positions: ", "", leftFrontDrive.getCurrentPosition(), rightFrontDrive.getCurrentPosition(), leftBackDrive.getCurrentPosition(), rightBackDrive.getCurrentPosition());
+            telemetry.update();*/
         }
-        customStop();
 
     }
-    public void customStop() {
-        super.stop();
-    }
+
+
 }

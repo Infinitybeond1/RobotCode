@@ -14,6 +14,8 @@ public class Arm {
     public Servo a2l;
 
     public double armPos = 0;
+    public double ARMPOSSCORING = 0.1;
+    public double ARMPOSPICKUP = 0.868;
 
     public Arm(HardwareMap hardwareMap) {
         a1r = hardwareMap.get(Servo.class, "a1r");
@@ -21,39 +23,27 @@ public class Arm {
     }
 
     public void up(){
-        if (armPos > 0.1) {
-            a1r.setPosition(armPos);
-            a2l.setPosition(1 - armPos);
-              armPos -= 0.005;
-       }
+        a1r.setPosition(1-armPos);
+        a2l.setPosition(armPos);
+        armPos -= 0.002;
+        if(armPos < 0) armPos = 0;
 
     }
 
     public void down(){
-       if (armPos < 0.9) {
-           a1r.setPosition(armPos);
-           a2l.setPosition(1 - armPos);
-           armPos += 0.005;
-       }
-    }
-/*
-    public void left(){
-        // if (armPos < 0.5) {
-        //    a1r.setPosition(armPos);
-        //a2l.setPosition(1 - armPos);
-        //    armPos -= 0.005;
-        // }
-        //armPos -= 0.01;
-        a2l.setPosition(1);
+        a1r.setPosition(1-armPos);
+        a2l.setPosition(armPos);
+        armPos += 0.002;
+        if(armPos > 1) armPos = 1;
     }
 
-    public void right(){
-        // if (armPos < 0.5) {
-        //    a1r.setPosition(armPos);
-        //a2l.setPosition(1 - armPos);
-        //    armPos -= 0.005;
-        // }
-        //armPos -= 0.01;
-        a2l.setPosition(0);
-    }*/
+    public void setPos(double tp){
+        if(tp > 1.0) tp = 1;
+        if(tp < 0.0) tp = 0;
+        armPos = tp;
+        a1r.setPosition(1-armPos);
+        a2l.setPosition(armPos);
+
+    }
+
 }
