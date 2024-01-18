@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Subsystems.gamepieceDetection;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -55,22 +56,16 @@ public class OpenCVTest extends LinearOpMode {
 
 
     // Vision
-    private gamepieceDetection propDetector;
-    private VisionPortal visionPortal;
+    private Camera cam;
 
     Arm arm;
 
     @Override
     public void runOpMode() {
-        arm = new Arm(hardwareMap);
-        propDetector = new gamepieceDetection();
-        propDetector.propColor = gamepieceDetection.Prop.RED;
-        visionPortal = VisionPortal.easyCreateWithDefaults(
-                hardwareMap.get(WebcamName.class, "armCam"), propDetector);
-
+        cam = new Camera(hardwareMap, telemetry);
         // Wait for the game to start (driver presses PLAY)
         while (!isStarted() && !isStopRequested()) {
-            telemetry.addLine(String.valueOf(propDetector.getLocation()));
+            telemetry.addLine(String.valueOf(cam.propDetector.getLocation()));
             telemetry.update();
         }
         runtime.reset();
@@ -80,13 +75,9 @@ public class OpenCVTest extends LinearOpMode {
 
         // red by default
         while(opModeIsActive()) {
-            visionPortal.getProcessorEnabled(propDetector);
-
-            telemetry.addLine(String.valueOf(propDetector.getLocation()));
+            telemetry.addLine(String.valueOf(cam.propDetector.getLocation()));
             telemetry.update();
         }
-
-        visionPortal.close();
     }
 }
 

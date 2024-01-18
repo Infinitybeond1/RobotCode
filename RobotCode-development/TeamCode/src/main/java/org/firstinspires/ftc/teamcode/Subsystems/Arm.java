@@ -14,8 +14,8 @@ public class Arm {
     public Servo a2l;
 
     public double armPos = 0;
-    public double ARMPOSSCORING = 0.1;
-    public double ARMPOSPICKUP = 0.868;
+    public double ARMPOSSCORING = 0.088;
+    public double ARMPOSPICKUP = 0.822;
 
     public Arm(HardwareMap hardwareMap) {
         a1r = hardwareMap.get(Servo.class, "a1r");

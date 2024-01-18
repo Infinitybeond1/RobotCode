@@ -14,116 +14,6 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 
-//import com.acmerobotics.dashboard.config.Config;
-//@Config
-/*
-public class gamepieceDetection implements VisionProcessor {
-
-
-    // Enumeration that helps set what color the game team prop is
-    public enum Prop {
-        BLUE, RED
-    }
-
-
-    // Enumeration that holds the location that the prop is detected at
-    public enum Location {
-        Left,
-        Center,
-        Right
-    }
-    private Location location;
-    public Prop propColor = Prop.RED;
-
-
-    // Scalars that provide the lowHSV and highHSV for image processing
-    Mat Lmat;
-    Mat Umat;
-
-    Rect leftROI = new Rect(new Point(0,0), new Point(160, 480));
-    Rect centerROI = new Rect(new Point(160, 0), new Point(480, 480));
-    Rect rightROI = new Rect(new Point(480,0), new Point(640, 480));
-
-    Scalar lowerUBoundR = new Scalar(135, 100, 100);
-    Scalar upperUBoundR = new Scalar(180, 255, 255);
-    Scalar upperLBoundR = new Scalar(20, 255, 255);
-    Scalar lowerLBoundR = new Scalar(0, 100, 100);
-
-    Scalar upperBoundB = new Scalar(130, 255, 255);
-    Scalar lowerBoundB = new Scalar(85, 100, 100);
-
-    @Override
-    public void init(int width, int height, CameraCalibration calibration) {
-        // Not useful
-    }
-
-
-    @Override
-    public Object processFrame(Mat frame, long captureTimeNanos) {
-        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2HSV); // Converts image to HSV color
-
-
-        if (propColor == Prop.RED) {
-            Core.inRange(frame, lowerLBoundR, upperLBoundR, Lmat);
-            Core.inRange(frame, lowerUBoundR, upperUBoundR, Umat);
-            Core.bitwise_or(Lmat, Umat, frame);
-        } else {
-            Core.inRange(frame, lowerBoundB, upperBoundB, Lmat);
-        }
-
-        Mat leftMat = frame.submat(leftROI);
-        Mat centerMat = frame.submat(centerROI);
-        Mat rightMat = frame.submat(rightROI);
-
-
-        int leftCount = Core.countNonZero(leftMat);
-        int centerCount = Core.countNonZero(centerMat);
-        int rightCount = Core.countNonZero(rightMat);
-
-
-        leftMat.release();
-        rightMat.release();
-        centerMat.release();
-
-        double max = Math.max(leftCount, Math.max(rightCount, centerCount));
-
-
-        if (leftCount == max){
-            location = Location.Left;
-        } else if (rightCount == max) {
-            location = Location.Right;
-        } else {
-            location = Location.Center;
-        }
-
-
-        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_GRAY2RGB);
-
-        Scalar red = new Scalar(255, 0, 0);
-        Scalar green = new Scalar(0, 255, 0);
-
-        Imgproc.rectangle(frame, leftROI, location == Location.Left? green: red);
-        Imgproc.rectangle(frame, rightROI, location == Location.Right? green: red);
-        Imgproc.rectangle(frame, centerROI, location == Location.Center? green: red);
-        Imgproc.putText(frame, location.name(), new Point(220*3,60*2.25),1,5, red);
-
-
-        return null; // No context object
-    }
-
-
-    public Location getLocation() {
-        return location;
-    }
-
-
-    @Override
-    public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
-        // Not useful either
-    }
-
-
-}*/
 
 public class gamepieceDetection implements VisionProcessor {
 
@@ -145,13 +35,13 @@ public class gamepieceDetection implements VisionProcessor {
 
 
     // Scalars that provide the lowHSV and highHSV for image processing
-    Scalar upperLBoundR = new Scalar(15, 255, 255);
-    Scalar lowerLBoundR = new Scalar(0, 20, 20);
+    Scalar upperLBoundR = new Scalar(25, 255, 255);
+    Scalar lowerLBoundR = new Scalar(0, 20, 5);
     Scalar upperUBoundR = new Scalar(360, 255, 255);
     Scalar lowerUBoundR = new Scalar(345, 20, 20);
 
     Scalar upperBoundB = new Scalar(130, 255, 255);
-    Scalar lowerBoundB = new Scalar(85, 20, 20 );
+    Scalar lowerBoundB = new Scalar(85, 20, 5 );
 
 
 
@@ -239,10 +129,7 @@ public class gamepieceDetection implements VisionProcessor {
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
         // Not useful either
-        // akshat: nothing here works all programmers kys
     }
-
-
 }
 
 

@@ -18,6 +18,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.firstinspires.ftc.teamcode.Subsystems.gamepieceDetection;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -36,12 +37,9 @@ import java.util.List;
 public class Camera {
     private AprilTagProcessor aprilTag;
     public VisionPortal visionPortal;
-    private WebcamName frontCam;
     private WebcamName armCam;
-    //public gamepieceDetection propDetector;
-    private int[] Ids;
+    public gamepieceDetection propDetector;
     Telemetry telemetry;
-    private boolean camIsFront = false;
 
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
@@ -49,34 +47,24 @@ public class Camera {
 
     public Camera(HardwareMap hardwareMap, Telemetry telemetry1) {
 
-        //propDetector = new gamepieceDetection();
-        frontCam = hardwareMap.get(WebcamName.class, "frontCam");
+        propDetector = new gamepieceDetection();
         armCam = hardwareMap.get(WebcamName.class, "armCam");
-        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+        aprilTag = new AprilTagProcessor.Builder().build();
+        visionPortal = VisionPortal.easyCreateWithDefaults(
+                hardwareMap.get(WebcamName.class, "armCam"), propDetector);
 
         telemetry = telemetry1;
 
 
-        CameraName switchableCamera = ClassFactory.getInstance()
-                .getCameraManager().nameForSwitchableCamera(frontCam, armCam);
 
-        //propDetector.propColor = gamepieceDetection.Prop.BLUE;
+        propDetector.propColor = gamepieceDetection.Prop.RED;
 
+        /*
         visionPortal = new VisionPortal.Builder()
-                .setCamera(switchableCamera)
-                .addProcessors(aprilTag)
+                .setCamera(armCam)
+                .addProcessors(aprilTag, propDetector)
                 .build();
-        visionPortal.setActiveCamera(frontCam);
-
-    }
-
-    public void switchCams(){
-        camIsFront = !camIsFront;
-        if(camIsFront){
-            visionPortal.setActiveCamera(frontCam);
-        }else{
-            visionPortal.setActiveCamera(armCam);
-        }
+*/
     }
 
     public double[] updateDataAT(int targetID) {
@@ -100,18 +88,27 @@ public class Camera {
 
             }
 
-        }   // end for() loop
+        }   // end for() c
         return null;
     }
-/*
+
     public String getGamepiecePos(){
-        switch (propDetector.getLocation()){
-            case Left: return"left";
-            case Right: return"right";
-            case Center: return"center";
+        /*
+        if(propDetector.getLocation() == gamepieceDetection.Location.Left){
+            return "left";
         }
-        return null;
+        if(propDetector.getLocation() == gamepieceDetection.Location.Right){
+            return "right";
+        }
+        if(propDetector.getLocation() == gamepieceDetection.Location.Center){
+            return "center";
+        }
+        return "none";
+
+         */
+        visionPortal.getProcessorEnabled(propDetector);
+        return String.valueOf(propDetector.getLocation());
     }
-*/
+
 
 }
