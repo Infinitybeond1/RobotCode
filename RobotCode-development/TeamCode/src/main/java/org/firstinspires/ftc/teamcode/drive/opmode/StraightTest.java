@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -12,9 +13,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
+*/
 /*
  * This is a simple routine to test translational drive capabilities.
- */
+ *//*
+
 @Disabled
 @Config
 @Autonomous(group = "drive")
@@ -46,3 +49,4 @@ public class StraightTest extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) ;
     }
 }
+*/

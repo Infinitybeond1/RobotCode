@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -15,13 +16,15 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.Objects;
 
+*/
 /**
  * This routine is designed to calculate the maximum angular velocity your bot can achieve under load.
  * <p>
  * Upon pressing start, your bot will turn at max power for RUNTIME seconds.
  * <p>
  * Further fine tuning of MAX_ANG_VEL may be desired.
- */
+ *//*
+
 @Disabled
 @Config
 @Autonomous(group = "drive")
@@ -72,3 +75,4 @@ public class MaxAngularVeloTuner extends LinearOpMode {
         while (!isStopRequested()) idle();
     }
 }
+*/

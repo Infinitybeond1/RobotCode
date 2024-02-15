@@ -15,11 +15,14 @@ class LsTest : LinearOpMode() {
         while (opModeIsActive()) {
             /// Linear Slide
             if (gamepad2.dpad_up) {
-                ls.up()
+                ls.ls1.power = 0.2;
+                ls.ls2.power = 0.2;
             } else if (gamepad2.dpad_down) {
-                ls.down()
+                ls.ls1.power = -0.2;
+                ls.ls2.power = -0.2;
             } else {
-                ls.stop()
+                ls.ls1.power = 0.0;
+                ls.ls2.power = 0.0;
             }
         }
     }

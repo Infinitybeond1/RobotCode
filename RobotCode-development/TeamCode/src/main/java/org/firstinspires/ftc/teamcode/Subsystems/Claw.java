@@ -8,8 +8,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 public class Claw {
-    private double CLAWPOSOPEN = 0.4;
+    private double CLAWPOSOPEN = 0.35;
     private double CLAWPOSCLOSED = 0.6;
+    private double CLAWPOSCORRECT = 0;
 
     public boolean claw1IsOpen = false;
     public boolean claw2IsOpen = false;
@@ -29,5 +30,9 @@ public class Claw {
 
         if(claw2IsOpen) claw2.setPosition(1-CLAWPOSOPEN);
         else claw2.setPosition(1-CLAWPOSCLOSED);
+    }
+    public void correctPos(){
+        claw1.setPosition(CLAWPOSCORRECT);
+        claw2.setPosition(1-CLAWPOSCORRECT);
     }
 }

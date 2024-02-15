@@ -9,9 +9,11 @@ public class WristServo {
 
     public Servo wrist;
 
-    public double wristPos = 0;
-    public double WRISTPOSSCORING = 0.848;
-    public double WRISTPOSPICKUP = 0.5;
+    public double wristPos = 0.1;
+    public double WRISTPOSSCORING = 0.816;
+    public double WRISTPOSPICKUP = 0.513;
+    public double WRISTPOSDEFAULT = 0.839;
+    public double WRISTPOSCORRECT = 0.517;
 
     public WristServo(HardwareMap hardwareMap) {
         wrist = hardwareMap.get(Servo.class, "wrist");

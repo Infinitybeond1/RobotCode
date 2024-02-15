@@ -38,40 +38,93 @@ public class LinearSlide {
         pid = new PID(telemetry);
 
 
-
     }
 
     public void staticTick(){
         if(targetPos > 3000) targetPos = 3000;
-        if(targetPos < 0) targetPos = 0;
+        if(targetPos < 10) targetPos = 10;
 
-        pid.tick(targetPos, 0.003, ls1, ls2);
+        pid.tick(targetPos, 0.006, ls1, ls2);
     }
 
 
 
     public void movePID(double targetPos) {
-        pid.move(targetPos, 0.001, 0.00001, 0.00001, ls1, ls2);
+        pid.move(targetPos, 0.001, 0, 0, ls1, ls2);
         telemetry.addData("ls1: ", ls1.getPower());
         telemetry.addData("ls2: ", ls2.getPower());
         telemetry.update();
     }
 
-   /* private void move(double targetPos) {
+   /*private void move(double targetPos) {
             ls1.setPower(speed);
             ls2.setPower(speed);
     }*/
 
-    public void up() {
-        targetPos += 400;
+    public void PIDup() {
+        targetPos += 600;
         if(ls1.getCurrentPosition() > 3000 || ls2.getCurrentPosition() > 3000) targetPos = 3000;
+
+        ls1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ls2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
         movePID(targetPos);
     }
 
-    public void down() {
-        targetPos -= 400;
+    public void PIDdown() {
+        targetPos -= 600;
         if(ls1.getCurrentPosition() < 0 || ls2.getCurrentPosition() < 0) targetPos = 0;
+
+        ls1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ls2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         movePID(targetPos);
+    }
+
+    public void up() {
+
+        targetPos+=600;
+
+        ls1.setTargetPosition(ls1.getCurrentPosition()+600);
+        ls2.setTargetPosition(ls1.getCurrentPosition()+600);
+
+        if(ls1.getTargetPosition() > 3000 || ls2.getTargetPosition() > 3000) {
+            targetPos = 3000;
+            ls1.setTargetPosition(3000);
+            ls2.setTargetPosition(3000);
+        }
+
+        ls1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        ls2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        ls1.setTargetPosition((int)targetPos);
+        ls1.setPower(0.5);
+        ls2.setPower(0.5);
+
+        while(ls1.isBusy() || ls2.isBusy());
+    }
+
+    public void down() {
+
+        targetPos-=600;
+
+        ls1.setTargetPosition(ls1.getCurrentPosition()-600);
+        ls2.setTargetPosition(ls1.getCurrentPosition()-600);
+
+        if(ls1.getTargetPosition() < 0 || ls2.getTargetPosition() < 0) {
+            targetPos = 0;
+            ls1.setTargetPosition(0);
+            ls2.setTargetPosition(0);
+        }
+
+        ls1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        ls2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        ls1.setPower(0.5);
+        ls2.setPower(0.5);
+
+        while(ls1.isBusy() || ls2.isBusy());
     }
 
     public void stop() {

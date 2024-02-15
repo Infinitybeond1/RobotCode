@@ -35,13 +35,11 @@ public class gamepieceDetection implements VisionProcessor {
 
 
     // Scalars that provide the lowHSV and highHSV for image processing
-    Scalar upperLBoundR = new Scalar(25, 255, 255);
-    Scalar lowerLBoundR = new Scalar(0, 20, 5);
-    Scalar upperUBoundR = new Scalar(360, 255, 255);
-    Scalar lowerUBoundR = new Scalar(345, 20, 20);
+    Scalar upperLBoundR = new Scalar(20.4, 255, 200);
+    Scalar lowerLBoundR = new Scalar(0, 40, 30);
 
-    Scalar upperBoundB = new Scalar(130, 255, 255);
-    Scalar lowerBoundB = new Scalar(85, 20, 5 );
+    Scalar upperBoundB = new Scalar(120, 250, 240);
+    Scalar lowerBoundB = new Scalar(90, 100, 150);
 
 
 
@@ -49,16 +47,16 @@ public class gamepieceDetection implements VisionProcessor {
     // Rects define the areas that the prop must be on to be considered left, right, or center
     // remove the multipliers when building on robot. x multipliers -3, y multipliers -2.25
     static final Rect LEFT_ROI = new Rect(
-            new Point(0, 0),
-            new Point(160, 480));
+            new Point(20, 50),
+            new Point(160, 200));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(480, 0),
-            new Point(640,480));
+            new Point(550, 50),
+            new Point(640,200));
 
 
     static final Rect CENTER_ROI = new Rect(
-            new Point(160, 0),
-            new Point(480,480));
+            new Point(260, 0),
+            new Point(380,150));
 
 
 

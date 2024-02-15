@@ -51,7 +51,8 @@ import java.util.List;
  */
 @TeleOp(name = "Concept: Double Vision", group = "Concept")
 @Disabled
-public class ConceptDoubleVision extends LinearOpMode {
+public class
+ConceptDoubleVision extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     /**

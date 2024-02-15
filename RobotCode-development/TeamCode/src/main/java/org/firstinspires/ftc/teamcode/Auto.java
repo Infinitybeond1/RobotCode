@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-@Disabled
-@Autonomous(name="Auto", group="Linear OpMode")
+//@Disabled
+@Autonomous(name="driveTest", group="Linear OpMode")
 public class Auto extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -42,22 +42,25 @@ public class Auto extends LinearOpMode {
             rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+            leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+            leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+            rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+            rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+
             //Arm init
-            com.qualcomm.robotcore.hardware.Servo a1 = hardwareMap.get(com.qualcomm.robotcore.hardware.Servo.class, "a1");
-            com.qualcomm.robotcore.hardware.Servo a2 = hardwareMap.get(Servo.class, "a2");
+            //com.qualcomm.robotcore.hardware.Servo a1 = hardwareMap.get(com.qualcomm.robotcore.hardware.Servo.class, "a1");
+            //com.qualcomm.robotcore.hardware.Servo a2 = hardwareMap.get(Servo.class, "a2");
 
             //a2.setDirection(Servo.Direction.REVERSE);
 
-            a1.setPosition(ARM_DOWN);
-            a2.setPosition(1-ARM_DOWN);
 
 
             //bot goe forward
-            leftFrontDrive.setPower(0.25);
-            leftBackDrive.setPower(0.25);
-            rightFrontDrive.setPower(0.25);
-            rightBackDrive.setPower(0.25);
-            sleep(800);
+            leftFrontDrive.setPower(0.5);
+            leftBackDrive.setPower(0.5);
+            rightFrontDrive.setPower(0.5);
+            rightBackDrive.setPower(0.5);
+            sleep(2000);
             leftFrontDrive.setPower(0);
             leftBackDrive.setPower(0);
             rightFrontDrive.setPower(0);

@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
@@ -29,6 +30,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.Objects;
 
+*/
 /*
  * This routine is designed to tune the open-loop feedforward coefficients. Although it may seem unnecessary,
  * tuning these coefficients is just as important as the positional parameters. Like the other
@@ -43,7 +45,8 @@ import java.util.Objects;
  * Pressing Y/Δ (Xbox/PS4) will pause the tuning process and enter driver override, allowing the
  * user to reset the position of the bot in the event that it drifts off the path.
  * Pressing B/O (Xbox/PS4) will cede control back to the tuning process.
- */
+ *//*
+
 @Disabled
 @Config
 @Autonomous(group = "drive")
@@ -153,4 +156,4 @@ public class ManualFeedforwardTuner extends LinearOpMode {
             telemetry.update();
         }
     }
-}
+}*/

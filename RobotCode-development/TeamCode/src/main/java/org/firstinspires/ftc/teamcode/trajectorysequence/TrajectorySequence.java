@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.trajectorysequence;
+/*package org.firstinspires.ftc.teamcode.trajectorysequence;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
@@ -42,3 +42,5 @@ public class TrajectorySequence {
         return sequenceList.size();
     }
 }
+
+ */

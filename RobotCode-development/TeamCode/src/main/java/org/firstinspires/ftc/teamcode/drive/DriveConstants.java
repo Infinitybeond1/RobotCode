@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -5,6 +6,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
 
+*/
 /*
  * Constants shared between multiple drive types.
  *
@@ -17,58 +19,70 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
  *
  * These are not the only parameters; some are located in the localizer classes, drive base classes,
  * and op modes themselves.
- */
+ *//*
+
 @Config
 public class DriveConstants {
 
-    /*
+    */
+/*
      * These are motor constants that should be listed online for your motors.
-     */
+     *//*
+
     public static final double TICKS_PER_REV = 537.7;
     public static final double MAX_RPM = 312;
 
-    /*
+    */
+/*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
      * Set this flag to false if drive encoders are not present and an alternative localization
      * method is in use (e.g., tracking wheels).
      *
      * If using the built-in motor velocity PID, update MOTOR_VELO_PID with the tuned coefficients
      * from DriveVelocityPIDTuner.
-     */
+     *//*
+
     public static final boolean RUN_USING_ENCODER = false;
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
             getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 
-    /*
+    */
+/*
      * These are physical constants that can be determined from your robot (including the track
      * width; it will be tune empirically later although a rough estimate is important). Users are
      * free to chose whichever linear distance unit they would like so long as it is consistently
      * used. The default values were selected with inches in mind. Road runner uses radians for
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
-     */
+     *//*
+
     public static double WHEEL_RADIUS = 1.88976; // in
     public static double GEAR_RATIO = 1 * (70.27/69.556) * (69.75/69.475); // output (wheel) speed / input (motor) speed (60.7/61)
     public static double TRACK_WIDTH = 16.84; // in
 
-    /*
+    */
+/*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
      * the built-in velocity PID, *these values are fine as is*. However, if you do not have drive
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
-     */
+     *//*
+
     public static double kV = 1.09 / rpmToVelocity(MAX_RPM);
     public static double kA = 0.003;
     public static double kStatic = 0;
 
-    /*
+    */
+/*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
      * the constraints should never exceed ~80% of the robot's actual capabilities. While Road
      * Runner is designed to enable faster autonomous motion, it is a good idea for testing to start
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
-     */
-    /*
+     *//*
+
+    */
+/*
      * Note from LearnRoadRunner.com:
      * The velocity and acceleration constraints were calculated based on the following equation:
      * ((MAX_RPM / 60) * GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI) * 0.85
@@ -88,7 +102,8 @@ public class DriveConstants {
      * Maximum Angular Velocity is calculated as: maximum velocity / trackWidth * (180 / Math.PI) but capped at 360°/s.
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
 
-     */
+     *//*
+
     public static double MAX_VEL = 52.48180821614297;
     public static double MAX_ACCEL = 52.48180821614297;
     public static double MAX_ANG_VEL = Math.toRadians(143.05551452043306);
@@ -117,3 +132,4 @@ public class DriveConstants {
 
 
 }
+*/

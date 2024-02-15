@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
@@ -23,6 +24,7 @@ import org.firstinspires.ftc.teamcode.util.RegressionUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /*
  * Op mode for computing kV, kStatic, and kA from various drive routines. For the curious, here's an
  * outline of the procedure:
@@ -32,7 +34,8 @@ import java.util.List;
  *   3. Accelerate the robot (apply constant power) and record the encoder counts.
  *   4. Adjust the encoder data based on the velocity tuning data and find kA with another linear
  *      regression.
- */
+ *//*
+
 @Disabled
 @Config
 @Autonomous(group = "drive")
@@ -220,4 +223,4 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
             idle();
         }
     }
-}
+}*/

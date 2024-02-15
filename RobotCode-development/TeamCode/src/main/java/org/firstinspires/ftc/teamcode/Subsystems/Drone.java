@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Drone {
-    public static volatile double STARTPOS_D = 0.648;
-    public static volatile double LAUNCHPOS_D = 1;
+    public static volatile double STARTPOS_D = 0.615;
+    public static volatile double LAUNCHPOS_D = 0.270;
     public double dronePos = 0;
 
     public Servo d1;

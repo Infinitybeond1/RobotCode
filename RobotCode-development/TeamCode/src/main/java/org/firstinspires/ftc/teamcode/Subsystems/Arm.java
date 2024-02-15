@@ -13,14 +13,25 @@ public class Arm {
     public Servo a1r;
     public Servo a2l;
 
-    public double armPos = 0;
-    public double ARMPOSSCORING = 0.088;
-    public double ARMPOSPICKUP = 0.822;
+    public double armPos = 0.1  ;
+    public double ARMPOSSCORING = 0;
+    public double ARMPOSPICKUP = 0.814;
+    public double ARMPOSDEFAULT = 0.785;
 
     public Arm(HardwareMap hardwareMap) {
         a1r = hardwareMap.get(Servo.class, "a1r");
         a2l = hardwareMap.get(Servo.class, "a2l");
     }
+
+    public void setPos(double tp){
+        if(tp > 1.0) tp = 1;
+        if(tp < 0.0) tp = 0;
+        armPos = tp;
+        a1r.setPosition(1-armPos);
+        a2l.setPosition(armPos);
+
+    }
+
 
     public void up(){
         a1r.setPosition(1-armPos);
@@ -37,13 +48,6 @@ public class Arm {
         if(armPos > 1) armPos = 1;
     }
 
-    public void setPos(double tp){
-        if(tp > 1.0) tp = 1;
-        if(tp < 0.0) tp = 0;
-        armPos = tp;
-        a1r.setPosition(1-armPos);
-        a2l.setPosition(armPos);
 
-    }
 
 }

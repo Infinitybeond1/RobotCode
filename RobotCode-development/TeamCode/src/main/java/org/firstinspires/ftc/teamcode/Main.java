@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -46,7 +48,6 @@ import org.firstinspires.ftc.teamcode.Subsystems.WristServo;
 
 //@Config
 @TeleOp(name = "Main", group = "Linear OpMode")
-//@Disabled
 
 public class Main extends LinearOpMode {
 
@@ -65,9 +66,9 @@ public class Main extends LinearOpMode {
     double lastFrontRightPower;
     double lastBackLeftPower;
     double lastBackRightPower;
-    boolean DTReversed = false;
-
-
+    //boolean DTReversed = false;
+    boolean red = true;
+    boolean robotCentric = true;
 
     @Override
     public void runOpMode() {
@@ -80,20 +81,10 @@ public class Main extends LinearOpMode {
         DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "rfd");
 
         /// Set modes
-
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-
-
-        // Drone init
-
 
         //Arm init
         arm = new Arm(hardwareMap);
@@ -110,23 +101,6 @@ public class Main extends LinearOpMode {
         //Linear Slide init
         ls = new LinearSlide(hardwareMap, telemetry);
 
-        //Wrist init
-        //WristServo wrist = new WristServo();
-        /*
-        imu = hardwareMap.get(IMU.class, "imu");
-
-        //IMU init
-        imu.initialize(
-                new IMU.Parameters(
-                        new RevHubOrientationOnRobot(
-                                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                                RevHubOrientationOnRobot.UsbFacingDirection.UP
-                        )
-                )
-        );
-
-         */
-
         // camera init
         // Camera camera = hardwareMap.get(Camera.class, "camera");
 
@@ -137,27 +111,51 @@ public class Main extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-        arm.setPos(arm.ARMPOSPICKUP);
-        wrist.setPos(wrist.WRISTPOSPICKUP);
+        arm.setPos(arm.ARMPOSDEFAULT);
+        wrist.setPos(wrist.WRISTPOSDEFAULT);
         claw.updatePos();
+
 
         while (opModeIsActive()) {
 
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
+            double y;
+            double x;
+            double rx;
+            double frontLeftPower;
+            double backLeftPower;
+            double frontRightPower;
+            double backRightPower;
 
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
+            if(robotCentric) {
+                y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+                x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+                rx = gamepad1.right_stick_x;
+                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                frontLeftPower = (y + x + rx) / denominator;
+                backLeftPower = (y - x + rx) / denominator;
+                frontRightPower = (y - x - rx) / denominator;
+                backRightPower = (y + x - rx) / denominator;
+            } else {
+                x = -gamepad1.left_stick_y * 1.1; // Remember, Y stick value is reversed
+                y = -gamepad1.left_stick_x; // Counteract imperfect strafing
+                rx = gamepad1.right_stick_x;
+                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                frontLeftPower = (y + x + rx) / denominator;
+                backLeftPower = (y - x + rx) / denominator;
+                frontRightPower = (y - x - rx) / denominator;
+                backRightPower = (y + x - rx) / denominator;
+            }
+
+
+            if(gamepad1.start){
+                robotCentric = !robotCentric;
+                while(gamepad1.start);
+            }
+
 
             double acc = 0.04;
 
+            /*
             frontLeftPower = frontLeftPower > lastFrontLeftPower + acc ? lastFrontLeftPower + acc : frontLeftPower;
             backLeftPower = backLeftPower > lastBackLeftPower + acc ? lastBackLeftPower + acc : backLeftPower;
             frontRightPower = frontRightPower > lastFrontRightPower + acc ? lastFrontRightPower + acc : frontRightPower;
@@ -167,7 +165,7 @@ public class Main extends LinearOpMode {
             backLeftPower = backLeftPower < lastBackLeftPower - acc ? lastBackLeftPower - acc : backLeftPower;
             frontRightPower = frontRightPower < lastFrontRightPower - acc ? lastFrontRightPower - acc : frontRightPower;
             backRightPower = backRightPower < lastBackRightPower - acc ? lastBackRightPower - acc : backRightPower;
-
+            */
 
             leftFrontDrive.setPower(frontLeftPower);
             leftBackDrive.setPower(backLeftPower);
@@ -179,6 +177,7 @@ public class Main extends LinearOpMode {
             lastFrontRightPower = frontRightPower;
             lastBackRightPower = backRightPower;
 
+            /*
             if(gamepad1.a){
                 DTReversed = !DTReversed;
                 while(gamepad1.a);
@@ -196,10 +195,10 @@ public class Main extends LinearOpMode {
                 rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
             }
 
-
+             */
 
             /// Linear Slide
-            ls.targetPos -=10 * gamepad2.right_stick_y;
+            ls.targetPos -= 15 * gamepad2.right_stick_y;
 
             /// Claw
             if(gamepad2.right_bumper) {
@@ -222,49 +221,123 @@ public class Main extends LinearOpMode {
                 while(gamepad2.left_bumper);
             }
 
-            if(gamepad2.a){
+
+            if(gamepad2.left_trigger > 0.5){
                 claw.claw1IsOpen = true;
                 claw.claw2IsOpen = true;
                 claw.updatePos();
-                while(gamepad2.a);
+                while(gamepad2.left_trigger > 0.5);
 
             }
 
-            if(gamepad2.y){
+            if(gamepad2.right_trigger > 0.5){
                 claw.claw1IsOpen = false;
                 claw.claw2IsOpen = false;
                 claw.updatePos();
-                while(gamepad2.y);
+                while(gamepad2.right_trigger > 0.5);
 
             }
 
-            ///Arm & Wist
-            if (gamepad2.b) {
+            if(gamepad2.start){
+                red = !red;
+                while(gamepad2.start);
+            }
+
+            boolean scoring;
+            boolean pickup;
+            boolean backboard;
+            boolean down;
+
+            if(red) {
+                telemetry.addLine("\n" +
+                        "██████╗░███████╗██████╗░\n" +
+                        "██╔══██╗██╔════╝██╔══██╗\n" +
+                        "██████╔╝█████╗░░██║░░██║\n" +
+                        "██╔══██╗██╔══╝░░██║░░██║\n" +
+                        "██║░░██║███████╗██████╔╝\n" +
+                        "╚═╝░░╚═╝╚══════╝╚═════╝░");
+
+                leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+                leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+                rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+                rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+
+
+
+                scoring = gamepad2.b;
+                pickup = gamepad2.x;
+                backboard = gamepad2.dpad_right;
+                down = gamepad2.dpad_left;
+            } else {
+                telemetry.addLine("\n" +
+                        "██████╗░██╗░░░░██╗░░░██╗███████╗\n" +
+                        "██╔══██╗██║░░░░██║░░░██║██╔════╝\n" +
+                        "██████╦╝██║░░░░██║░░░██║█████╗░░\n" +
+                        "██╔══██╗██║░░░░██║░░░██║██╔══╝░░\n" +
+                        "██████╦╝██████╗╚██████╔╝███████╗\n" +
+                        "╚═════╝░╚═════╝░╚═════╝░╚══════╝");
+
+                if (robotCentric){
+                    leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+                    leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+                    rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+                    rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+                } else{
+                    leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+                    leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+                    rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+                    rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+                }
+
+                scoring = gamepad2.x;
+                pickup = gamepad2.b;
+                backboard = gamepad2.dpad_left;
+                down = gamepad2.dpad_right;
+            }
+
+            if(!robotCentric){
+                telemetry.addLine("akshatCentric");
+            } else{
+                telemetry.addLine("robotCentric");
+            }
+
+            if (scoring) { //scoring
                 arm.setPos(arm.ARMPOSSCORING);
                 wrist.setPos(wrist.WRISTPOSSCORING);
-            } else if (gamepad2.x) {
+            } else if (pickup) { //pickup
                 ls.targetPos = 0;
                 arm.setPos(arm.ARMPOSPICKUP);
                 wrist.setPos(wrist.WRISTPOSPICKUP);
+            } else if (gamepad2.a) { //default
+                arm.setPos(arm.ARMPOSDEFAULT);
+                wrist.setPos(wrist.WRISTPOSDEFAULT);
+                claw.claw1IsOpen = false;
+                claw.claw2IsOpen = false;
+                claw.updatePos();
+            } else if (gamepad2.y) { //scoring
+                arm.setPos(arm.ARMPOSSCORING);
+                wrist.setPos(wrist.WRISTPOSCORRECT);
+                claw.correctPos();
             }
 
-            ///Arm
-            if(gamepad2.dpad_up){
+            //Arm
+            if(backboard){
                 arm.up();
                 telemetry.addData("armpos", arm.armPos);
                 telemetry.update();
-            } else if (gamepad2.dpad_down) {
+            } else if (down) {
                 arm.down();
                 telemetry.addData("armpos", arm.armPos);
                 telemetry.update();
             }
 
+
             ///Wrist
-            if(gamepad2.dpad_right){
+            if(gamepad2.dpad_up){
                 wrist.up();
                 telemetry.addData("wristpos", wrist.wristPos);
                 telemetry.update();
-            } else if (gamepad2.dpad_left) {
+            } else if (gamepad2.dpad_down) {
                 wrist.down();
                 telemetry.addData("wristpos", wrist.wristPos);
                 telemetry.update();
@@ -272,22 +345,32 @@ public class Main extends LinearOpMode {
 
             ///Airplane Launcher
 
-            if (gamepad1.b) {
-                drone.dronePos -= 0.005;
+            if (gamepad1.x) {
+                drone.launch();
                 drone.updatePos();
             }
-            if (gamepad1.x) {
-                drone.dronePos += 0.005;
+            if (gamepad1.b) {
+                drone.reset();
+                drone.updatePos();
             }
 
-
-            if(opModeIsActive()) {
-                ls.staticTick();
+            if(gamepad1.a){
+                ls.ls1.setPower(1);
+                ls.ls2.setPower(1);
+                ls.targetPos = 3000;
+                ls.ls1.setPower(0.5);
+                ls.ls2.setPower(0.5);
             }
 
+            ls.staticTick();
+
+/*
             telemetry.addData("wristpos", wrist.wristPos);
             telemetry.addData("armpos", arm.armPos);
             telemetry.addData("dronepos: ", drone.dronePos);
+            telemetry.addData("real ls1 pos: ", ls.ls1.getCurrentPosition());
+            telemetry.addData("real ls2 pos(ls2 is reversed)[: ", ls.ls2.getCurrentPosition());
+            telemetry.addData("theoretical ls1 pos: ", ls.targetPos);
 
             if(claw.claw1IsOpen) {
                 telemetry.addLine("Claw 1(Right): Open");
@@ -300,6 +383,14 @@ public class Main extends LinearOpMode {
             }else{
                 telemetry.addLine("Claw 2(Left): Closed");
             }
+            telemetry.update();*/
+
+            telemetry.addData("lfd power: ", leftFrontDrive.getPower());
+            telemetry.addData("rfd power: ", rightFrontDrive.getPower());
+            telemetry.addData("lbd power: ", leftBackDrive.getPower());
+            telemetry.addData("rbd power: ", rightBackDrive.getPower());
+            telemetry.addData("ls1 power: ", ls.ls1.getPower());
+            telemetry.addData("ls1 power: ", ls.ls1.getPower());
             telemetry.update();
         }
         customStop();

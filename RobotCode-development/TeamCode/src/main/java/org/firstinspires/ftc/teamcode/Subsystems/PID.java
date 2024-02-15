@@ -29,11 +29,13 @@ public class PID {
             return;
         }
 
+        double kF = 0.06;
+
         double encoderPosition = motors[1].getCurrentPosition();
         // calculate the error
         double error = reference - encoderPosition;
 
-        for(DcMotor motor : motors) motor.setPower(Kp * error);
+        for(DcMotor motor : motors) motor.setPower(Kp * error + kF);
 
     }
 

@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.util;
 
 import androidx.annotation.Nullable;
@@ -12,14 +13,18 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * Various regression utilities.
- */
+ *//*
+
 public class RegressionUtil {
 
-    /**
+    */
+/**
      * Feedforward parameter estimates from the ramp regression and additional summary statistics
-     */
+     *//*
+
     public static class RampResult {
         public final double kV, kStatic, rSquare;
 
@@ -30,9 +35,11 @@ public class RegressionUtil {
         }
     }
 
-    /**
+    */
+/**
      * Feedforward parameter estimates from the ramp regression and additional summary statistics
-     */
+     *//*
+
     public static class AccelResult {
         public final double kA, rSquare;
 
@@ -42,14 +49,16 @@ public class RegressionUtil {
         }
     }
 
-    /**
+    */
+/**
      * Numerically compute dy/dx from the given x and y values. The returned list is padded to match
      * the length of the original sequences.
      *
      * @param x x-values
      * @param y y-values
      * @return derivative values
-     */
+     *//*
+
     private static List<Double> numericalDerivative(List<Double> x, List<Double> y) {
         List<Double> deriv = new ArrayList<>(x.size());
         for (int i = 1; i < x.size() - 1; i++) {
@@ -64,7 +73,8 @@ public class RegressionUtil {
         return deriv;
     }
 
-    /**
+    */
+/**
      * Run regression to compute velocity and static feedforward from ramp test data.
      *
      * Here's the general procedure for gathering the requisite data:
@@ -77,7 +87,8 @@ public class RegressionUtil {
      * @param powerSamples power samples
      * @param fitStatic fit kStatic
      * @param file log file
-     */
+     *//*
+
     public static RampResult fitRampData(List<Double> timeSamples, List<Double> positionSamples,
                                          List<Double> powerSamples, boolean fitStatic,
                                          @Nullable File file) {
@@ -109,7 +120,8 @@ public class RegressionUtil {
                               rampReg.getRSquare());
     }
 
-    /**
+    */
+/**
      * Run regression to compute acceleration feedforward.
      *
      * @param timeSamples time samples
@@ -117,7 +129,8 @@ public class RegressionUtil {
      * @param powerSamples power samples
      * @param rampResult ramp result
      * @param file log file
-     */
+     *//*
+
     public static AccelResult fitAccelData(List<Double> timeSamples, List<Double> positionSamples,
                                            List<Double> powerSamples, RampResult rampResult,
                                            @Nullable File file) {
@@ -154,3 +167,4 @@ public class RegressionUtil {
         return new AccelResult(Math.abs(accelReg.getSlope()), accelReg.getRSquare());
     }
 }
+*/
